@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ECE7E5;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .animation-container {
+            position: relative;
+            width: 90vw;
+            max-width: 1400px;
+            height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* SIGN Text */
+        .sign-text {
+            position: absolute;
+            font-size: 120px;
+            font-weight: bold;
+            color: #252525;
+            letter-spacing: 20px;
+            transform: scale(0.3);
+            opacity: 0;
+            animation: growText 2.5s ease-out forwards;
+        }
+
+        @keyframes growText {
+            0% {
+                transform: scale(0.3);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+        }
+
+        /* Characters Container */
+        .characters {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 5%;
+        }
+
+        .character {
+            font-size: 200px;
+            opacity: 0;
+            transform: translateY(-200px);
+        }
+
+        .char-1 {
+            animation: dropChar 0.8s ease-out 2.8s forwards;
+        }
+
+        .char-2 {
+            animation: dropChar 0.8s ease-out 3.3s forwards;
+        }
+
+        .char-3 {
+            animation: dropChar 0.8s ease-out 3.8s forwards;
+        }
+
+        @keyframes dropChar {
+            0% {
+                transform: translateY(-200px);
+                opacity: 0;
+            }
+            60% {
+                transform: translateY(10px);
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Restart Button */
+        .restart-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 35px;
+            background-color: #252525;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .restart-btn:hover {
+            background-color: #444;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .restart-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Info text */
+        .info {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        ASL Animation Demo
+    </div>
+
+    <div class="animation-container">
+        <!-- SIGN Letters (growing) -->
+        <div class="sign-text">SIGN</div>
+
+        <!-- Three Characters (dropping) -->
+        <div class="characters">
+            <div class="character char-1" style="color: #8FB1F3;">👋</div>
+            <div class="character char-2" style="color: #E7C8FD;">🤟</div>
+            <div class="character char-3" style="color: #FDA549;">✌️</div>
+        </div>
+    </div>
+
+    <button class="restart-btn" onclick="location.reload()">↻ Restart</button>
+</body>
+</html>

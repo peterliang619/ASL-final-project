@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASL Pages Frame Transition</title>
+    <title>ASL Pages Animation</title>
     <style>
         * {
             margin: 0;
@@ -16,84 +16,18 @@
             height: 100%;
             background-color: #ECE7E5;
             overflow: hidden;
-        }
-
-        .svg-viewport {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .svg-container {
-            width: 2075px;
-            height: 1117px;
-            position: absolute;
-            transform: scale(1);
-            animation: panToFrame2 3s ease-in-out 2.5s forwards;
+        #svg-display {
+            width: 90vw;
+            height: 90vh;
+            max-width: 2075px;
+            max-height: 1117px;
         }
 
-        @keyframes panToFrame2 {
-            0% {
-                /* Show Frame 1 - top of SVG */
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                /* Show Frame 2 - shift down to y=1313 */
-                transform: translateY(-1313px) scale(1);
-            }
-        }
-
-        .svg-container object,
-        .svg-container embed {
-            width: 2075px;
-            height: 19996px;
-            display: block;
-            pointer-events: none;
-        }
-
-        /* Responsive scaling */
-        @media (max-width: 2075px) {
-            .svg-container {
-                transform-origin: top center;
-            }
-
-            @keyframes panToFrame2 {
-                0% {
-                    transform: translateY(0) scale(0.9);
-                }
-                100% {
-                    transform: translateY(-1313px) scale(0.9);
-                }
-            }
-        }
-
-        @media (max-width: 1800px) {
-            @keyframes panToFrame2 {
-                0% {
-                    transform: translateY(0) scale(0.8);
-                }
-                100% {
-                    transform: translateY(-1050px) scale(0.8);
-                }
-            }
-        }
-
-        @media (max-width: 1400px) {
-            @keyframes panToFrame2 {
-                0% {
-                    transform: translateY(0) scale(0.6);
-                }
-                100% {
-                    transform: translateY(-788px) scale(0.6);
-                }
-            }
-        }
-
-        /* Restart Button */
         .restart-btn {
             position: fixed;
             bottom: 40px;
@@ -129,29 +63,63 @@
     </style>
 </head>
 <body>
-    <div class="loading" id="loading">Loading ASL Pages...</div>
-
-    <div class="svg-viewport">
-        <div class="svg-container">
-            <object id="svgObject" data="asl-pages.svg" type="image/svg+xml">
-                <embed src="asl-pages.svg" type="image/svg+xml" />
-            </object>
-        </div>
-    </div>
-
+    <div class="loading" id="loading">Loading...</div>
+    <div id="svg-display"></div>
     <button class="restart-btn" onclick="location.reload()">↻ Restart</button>
 
     <script>
-        // Hide loading message once SVG loads
-        const svgObject = document.getElementById('svgObject');
-        svgObject.addEventListener('load', function() {
-            document.getElementById('loading').style.display = 'none';
-        });
+        // Load the SVG file
+        fetch('asl-pages.svg')
+            .then(response => response.text())
+            .then(svgContent => {
+                document.getElementById('loading').style.display = 'none';
 
-        // Fallback: hide loading after 2 seconds
-        setTimeout(function() {
-            document.getElementById('loading').style.display = 'none';
-        }, 2000);
+                // Insert SVG into the page
+                const container = document.getElementById('svg-display');
+                container.innerHTML = svgContent;
+
+                // Get the SVG element
+                const svg = container.querySelector('svg');
+
+                if (svg) {
+                    // Set initial viewBox to show Frame 1
+                    svg.setAttribute('viewBox', '0 0 2075 1117');
+                    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+                    // Animate to Frame 2 after 2.5 seconds
+                    setTimeout(() => {
+                        animateViewBox(svg, 0, 1313, 2000); // 2 second transition
+                    }, 2500);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading SVG:', error);
+                document.getElementById('loading').textContent = 'Error loading SVG';
+            });
+
+        // Smooth viewBox animation function
+        function animateViewBox(svg, startY, endY, duration) {
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing function for smooth animation
+                const easeProgress = progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                const currentY = startY + (endY - startY) * easeProgress;
+                svg.setAttribute('viewBox', `0 ${currentY} 2075 1117`);
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
     </script>
 </body>
 </html>
